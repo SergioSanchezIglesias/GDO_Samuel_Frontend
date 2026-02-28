@@ -1,0 +1,14 @@
+<div class="input-group">
+  <label class="input-label">{{ label() }}</label>
+  <input
+    class="input-field"
+    [class.input-field--error]="errorMessage()"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    (input)="value.set($any($event.target).value)"
+  />
+  @if (errorMessage()) {
+    <span class="input-error">{{ errorMessage() }}</span>
+  }
+</div>
