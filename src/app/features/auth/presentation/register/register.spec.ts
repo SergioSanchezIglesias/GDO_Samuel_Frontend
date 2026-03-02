@@ -21,6 +21,7 @@ describe('RegisterComponent', () => {
     name: 'New User',
     email: 'new@example.com',
     provider: 'local',
+    rol: 'usuario',
   };
 
   beforeEach(async () => {

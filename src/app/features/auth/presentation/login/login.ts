@@ -48,7 +48,6 @@ export class LoginComponent {
     () =>
       this.email() !== '' &&
       this.password() !== '' &&
-      this.codigoRetiro() !== '' &&
       !this.emailError() &&
       !this.passwordError() &&
       !this.codigoError(),
@@ -60,11 +59,13 @@ export class LoginComponent {
     this.loading.set(true);
     this.errorMessage.set('');
 
+    const codigoRetiro = this.codigoRetiro();
+
     this.loginUseCase
       .execute({
         email: this.email(),
         password: this.password(),
-        codigoRetiro: this.codigoRetiro(),
+        ...(codigoRetiro !== '' && { codigoRetiro }),
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

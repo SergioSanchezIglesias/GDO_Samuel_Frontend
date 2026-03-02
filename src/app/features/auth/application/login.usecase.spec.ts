@@ -36,6 +36,7 @@ describe('LoginUseCase', () => {
     name: 'Test User',
     email: 'test@example.com',
     provider: 'local',
+    rol: 'usuario',
   };
 
   const mockResponse: LoginResponse = {

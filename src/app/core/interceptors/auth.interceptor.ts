@@ -1,5 +1,6 @@
 import { HttpClient, type HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 
 import type { AuthTokens } from '../../features/auth/domain/models/auth.model';
@@ -7,6 +8,7 @@ import { TokenStoragePort } from '../../features/auth/domain/ports/token-storage
 import { API_URL } from '../config/api.config';
 
 const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'] as const;
+const DASHBOARD_PATH = '/dashboard';
 
 function isAuthEndpoint(url: string): boolean {
   return AUTH_PATHS.some((path) => url.includes(path));
@@ -16,6 +18,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStoragePort);
   const http = inject(HttpClient);
   const apiUrl = inject(API_URL);
+  const router = inject(Router);
 
   if (isAuthEndpoint(req.url)) {
     return next(req);
@@ -28,6 +31,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error) => {
+      if (error.status === 403) {
+        console.warn('[authInterceptor] 403 Forbidden — access denied to resource:', req.url);
+        if (router.url !== DASHBOARD_PATH) {
+          router.navigate([DASHBOARD_PATH]);
+        }
+        return throwError(() => error);
+      }
+
       if (error.status !== 401) {
         return throwError(() => error);
       }

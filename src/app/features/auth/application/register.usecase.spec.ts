@@ -36,6 +36,7 @@ describe('RegisterUseCase', () => {
     name: 'New User',
     email: 'new@example.com',
     provider: 'local',
+    rol: 'usuario',
   };
 
   const mockResponse: RegisterResponse = {

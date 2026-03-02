@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 
 import { API_URL } from '../../../../core/config/api.config';
-import type { AuthTokens } from '../../domain/models/auth.model';
+import { decodeJwtPayload } from '../../../../core/utils/jwt-decode';
+import type { AuthTokens, UserRole } from '../../domain/models/auth.model';
 import { TokenStoragePort } from '../../domain/ports/token-storage.port';
 
 const REFRESH_TOKEN_KEY = 'gdo_refresh_token';
@@ -14,13 +15,17 @@ export class TokenStorageAdapter extends TokenStoragePort {
   private readonly apiUrl = inject(API_URL);
 
   private readonly _accessToken = signal<string | null>(null);
+  private readonly _userRole = signal<UserRole | null>(null);
   private refreshTimerId: ReturnType<typeof setTimeout> | null = null;
 
   readonly accessToken = this._accessToken.asReadonly();
   readonly isAuthenticated = computed(() => this._accessToken() !== null);
+  readonly userRole = this._userRole.asReadonly();
 
   saveTokens(tokens: AuthTokens): void {
     this._accessToken.set(tokens.accessToken);
+    const payload = decodeJwtPayload(tokens.accessToken);
+    this._userRole.set(payload?.rol ?? null);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     this.scheduleProactiveRefresh();
   }
@@ -32,6 +37,7 @@ export class TokenStorageAdapter extends TokenStoragePort {
   clearTokens(): void {
     this.cancelProactiveRefresh();
     this._accessToken.set(null);
+    this._userRole.set(null);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 

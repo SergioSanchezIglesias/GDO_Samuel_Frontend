@@ -1,6 +1,7 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TokenStoragePort } from '../../features/auth/domain/ports/token-storage.port';
@@ -10,6 +11,7 @@ import { authInterceptor } from './auth.interceptor';
 describe('authInterceptor', () => {
   let http: HttpClient;
   let httpTesting: HttpTestingController;
+  let router: Router;
   const fakeApiUrl = 'http://test-api.com';
 
   const mockTokenStorage = {
@@ -25,6 +27,7 @@ describe('authInterceptor', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
         { provide: TokenStoragePort, useValue: mockTokenStorage },
@@ -34,6 +37,7 @@ describe('authInterceptor', () => {
 
     http = TestBed.inject(HttpClient);
     httpTesting = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
   });
 
   afterEach(() => {
@@ -176,5 +180,61 @@ describe('authInterceptor', () => {
 
     expect(mockTokenStorage.clearTokens).toHaveBeenCalled();
     expect(caughtError).toBeDefined();
+  });
+
+  it('should navigate to /dashboard on 403 response', async () => {
+    mockTokenStorage.accessToken.mockReturnValue('valid-token');
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    let caughtError: unknown;
+    http.get(`${fakeApiUrl}/admin/resource`).subscribe({
+      error: (err) => {
+        caughtError = err;
+      },
+    });
+
+    const req = httpTesting.expectOne(`${fakeApiUrl}/admin/resource`);
+    req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(caughtError).toBeDefined();
+  });
+
+  it('should NOT clear tokens on 403 response', () => {
+    mockTokenStorage.accessToken.mockReturnValue('valid-token');
+
+    http.get(`${fakeApiUrl}/admin/resource`).subscribe({ error: () => {} });
+
+    const req = httpTesting.expectOne(`${fakeApiUrl}/admin/resource`);
+    req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+
+    expect(mockTokenStorage.clearTokens).not.toHaveBeenCalled();
+  });
+
+  it('should NOT attempt token refresh on 403 response', () => {
+    mockTokenStorage.accessToken.mockReturnValue('valid-token');
+    mockTokenStorage.getRefreshToken.mockReturnValue('refresh-token');
+
+    http.get(`${fakeApiUrl}/admin/resource`).subscribe({ error: () => {} });
+
+    const req = httpTesting.expectOne(`${fakeApiUrl}/admin/resource`);
+    req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+
+    httpTesting.expectNone(`${fakeApiUrl}/auth/refresh`);
+  });
+
+  it('should NOT navigate on 403 when already on /dashboard', async () => {
+    mockTokenStorage.accessToken.mockReturnValue('valid-token');
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    // Simulate being already on /dashboard
+    Object.defineProperty(router, 'url', { get: () => '/dashboard', configurable: true });
+
+    http.get(`${fakeApiUrl}/admin/resource`).subscribe({ error: () => {} });
+
+    const req = httpTesting.expectOne(`${fakeApiUrl}/admin/resource`);
+    req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });

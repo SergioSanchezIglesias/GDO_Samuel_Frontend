@@ -21,6 +21,7 @@ describe('LoginComponent', () => {
     name: 'Test User',
     email: 'test@example.com',
     provider: 'local',
+    rol: 'usuario',
   };
 
   beforeEach(async () => {
@@ -183,5 +184,51 @@ describe('LoginComponent', () => {
 
     const button = fixture.nativeElement.querySelector('.btn') as HTMLButtonElement;
     expect(button.disabled).toBe(false);
+  });
+
+  it('should be valid without codigoRetiro', async () => {
+    component.email.set('test@example.com');
+    component.password.set('password123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.isFormValid()).toBe(true);
+    const button = fixture.nativeElement.querySelector('.btn') as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+  });
+
+  it('should omit codigoRetiro from execute payload when field is empty', async () => {
+    mockLoginUseCase.execute.mockReturnValue(of(mockUser));
+
+    component.email.set('test@example.com');
+    component.password.set('password123');
+    // codigoRetiro stays empty (default '')
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.onSubmit();
+
+    expect(mockLoginUseCase.execute).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+    });
+  });
+
+  it('should include codigoRetiro in execute payload when provided', async () => {
+    mockLoginUseCase.execute.mockReturnValue(of(mockUser));
+
+    component.email.set('test@example.com');
+    component.password.set('password123');
+    component.codigoRetiro.set('654321');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.onSubmit();
+
+    expect(mockLoginUseCase.execute).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+      codigoRetiro: '654321',
+    });
   });
 });

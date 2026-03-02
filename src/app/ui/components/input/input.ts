@@ -19,6 +19,7 @@ export class InputComponent {
   readonly placeholder = input<string>('');
   readonly type = input<InputType>('text');
   readonly errorMessage = input<string>('');
+  readonly hint = input<string>('');
 
   readonly value = model<string>('');
 }

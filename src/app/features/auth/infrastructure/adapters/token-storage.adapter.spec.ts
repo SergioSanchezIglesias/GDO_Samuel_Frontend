@@ -169,4 +169,55 @@ describe('TokenStorageAdapter', () => {
 
     expect(adapter.accessToken()).toBeNull();
   });
+
+  // --- userRole signal ---
+
+  it('should have userRole as null initially', () => {
+    expect(adapter.userRole()).toBeNull();
+  });
+
+  it('should extract and set userRole from a valid JWT on saveTokens', () => {
+    // Build a real base64url-encoded JWT payload with rol: organizador
+    const payload = JSON.stringify({ sub: '1', email: 'a@b.com', rol: 'organizador', iat: 1, exp: 9 });
+    const encoded = btoa(payload).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    const validJwt = `header.${encoded}.sig`;
+
+    adapter.saveTokens({ accessToken: validJwt, refreshToken: 'refresh' });
+
+    expect(adapter.userRole()).toBe('organizador');
+  });
+
+  it('should set userRole to usuario when JWT contains rol: usuario', () => {
+    const payload = JSON.stringify({ sub: '2', email: 'b@b.com', rol: 'usuario', iat: 1, exp: 9 });
+    const encoded = btoa(payload).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    const validJwt = `header.${encoded}.sig`;
+
+    adapter.saveTokens({ accessToken: validJwt, refreshToken: 'refresh' });
+
+    expect(adapter.userRole()).toBe('usuario');
+  });
+
+  it('should set userRole to null when JWT is invalid/unparseable', () => {
+    // Save a valid token first so userRole is non-null
+    const payload = JSON.stringify({ sub: '1', email: 'a@b.com', rol: 'organizador', iat: 1, exp: 9 });
+    const encoded = btoa(payload).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    adapter.saveTokens({ accessToken: `header.${encoded}.sig`, refreshToken: 'r' });
+    expect(adapter.userRole()).toBe('organizador');
+
+    // Now save with an invalid JWT
+    adapter.saveTokens({ accessToken: 'not.a.valid', refreshToken: 'r' });
+
+    expect(adapter.userRole()).toBeNull();
+  });
+
+  it('should reset userRole to null on clearTokens', () => {
+    const payload = JSON.stringify({ sub: '1', email: 'a@b.com', rol: 'organizador', iat: 1, exp: 9 });
+    const encoded = btoa(payload).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    adapter.saveTokens({ accessToken: `header.${encoded}.sig`, refreshToken: 'r' });
+    expect(adapter.userRole()).toBe('organizador');
+
+    adapter.clearTokens();
+
+    expect(adapter.userRole()).toBeNull();
+  });
 });

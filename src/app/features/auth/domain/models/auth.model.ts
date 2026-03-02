@@ -5,11 +5,22 @@ const AUTH_PROVIDER = {
 
 type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER];
 
+export type UserRole = 'organizador' | 'usuario';
+
 export interface User {
   id: number;
   name: string;
   email: string;
   provider: AuthProvider;
+  rol: UserRole;
+}
+
+export interface JwtPayload {
+  sub: string;
+  email: string;
+  rol: UserRole;
+  iat: number;
+  exp: number;
 }
 
 export interface AuthTokens {
@@ -20,7 +31,7 @@ export interface AuthTokens {
 export interface LoginRequest {
   email: string;
   password: string;
-  codigoRetiro: string;
+  codigoRetiro?: string;
 }
 
 export interface RegisterRequest {

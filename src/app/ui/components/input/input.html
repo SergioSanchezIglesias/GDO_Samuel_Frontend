@@ -11,4 +11,7 @@
   @if (errorMessage()) {
     <span class="input-error">{{ errorMessage() }}</span>
   }
+  @if (hint()) {
+    <span class="input-hint">{{ hint() }}</span>
+  }
 </div>
