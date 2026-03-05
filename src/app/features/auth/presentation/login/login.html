@@ -1,0 +1,40 @@
+<app-auth-layout title="GDO Samuel" subtitle="Gestión de retiros espirituales">
+  <div class="auth-card">
+    @if (errorMessage()) {
+      <div class="auth-error">{{ errorMessage() }}</div>
+    }
+    <app-input
+      label="Email"
+      placeholder="tu@email.com"
+      type="email"
+      [(value)]="email"
+      [errorMessage]="emailError()"
+    />
+    <app-input
+      label="Contraseña"
+      placeholder="Mínimo 8 caracteres"
+      type="password"
+      [(value)]="password"
+      [errorMessage]="passwordError()"
+    />
+    <app-input
+      label="Código de retiro"
+      placeholder="6 dígitos"
+      hint="Obligatorio para participantes"
+      [(value)]="codigoRetiro"
+      [errorMessage]="codigoError()"
+    />
+    <app-button
+      label="Iniciar sesión"
+      type="submit"
+      [disabled]="!isFormValid()"
+      [loading]="loading()"
+      (clicked)="onSubmit()"
+    />
+  </div>
+  <app-text-link
+    prefixText="¿No tienes cuenta?"
+    actionText="Regístrate"
+    route="/auth/register"
+  />
+</app-auth-layout>

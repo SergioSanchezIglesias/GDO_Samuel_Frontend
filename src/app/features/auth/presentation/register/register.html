@@ -1,0 +1,39 @@
+<app-auth-layout title="Crear cuenta" subtitle="Únete a tu retiro espiritual">
+  <div class="auth-card">
+    @if (errorMessage()) {
+      <div class="auth-error">{{ errorMessage() }}</div>
+    }
+    <app-input
+      label="Nombre"
+      placeholder="Tu nombre"
+      [(value)]="nombre"
+      [errorMessage]="nombreError()"
+    />
+    <app-input
+      label="Email"
+      placeholder="tu@email.com"
+      type="email"
+      [(value)]="email"
+      [errorMessage]="emailError()"
+    />
+    <app-input
+      label="Contraseña"
+      placeholder="Mínimo 8 caracteres"
+      type="password"
+      [(value)]="password"
+      [errorMessage]="passwordError()"
+    />
+    <app-button
+      label="Crear cuenta"
+      type="submit"
+      [disabled]="!isFormValid()"
+      [loading]="loading()"
+      (clicked)="onSubmit()"
+    />
+  </div>
+  <app-text-link
+    prefixText="¿Ya tienes cuenta?"
+    actionText="Inicia sesión"
+    route="/auth/login"
+  />
+</app-auth-layout>

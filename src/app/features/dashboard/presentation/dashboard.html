@@ -1,0 +1,13 @@
+<div class="dashboard">
+  <nav class="dashboard__nav">
+    <a class="dashboard__nav-item" [routerLink]="['/dashboard']">Dashboard</a>
+    <a class="dashboard__nav-item" [routerLink]="['/oraciones']">Oraciones</a>
+    @if (userRole() === 'organizador') {
+      <a class="dashboard__nav-item" [routerLink]="['/retiros']">Retiros</a>
+      <a class="dashboard__nav-item" [routerLink]="['/usuarios']">Usuarios</a>
+    }
+  </nav>
+  <h1>Dashboard</h1>
+  <p>Bienvenido a GDO Samuel</p>
+  <button class="dashboard__logout" (click)="onLogout()">Cerrar sesión</button>
+</div>

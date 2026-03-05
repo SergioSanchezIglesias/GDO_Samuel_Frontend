@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.text-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  &__prefix {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-family: 'Outfit', sans-serif;
+  }
+
+  &__action {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-brown);
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
