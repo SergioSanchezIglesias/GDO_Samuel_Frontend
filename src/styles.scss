@@ -1,6 +1,7 @@
 @use 'app/ui/styles/variables';
 @use 'app/ui/styles/reset';
 @use 'app/ui/styles/typography';
+@use 'app/ui/styles/breakpoints';
 
 body {
   font-family: 'Outfit', sans-serif;

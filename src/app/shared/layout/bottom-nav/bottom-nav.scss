@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  height: 64px;
+  background: var(--bg-card);
+  box-shadow: 0 -1px 8px rgba(26, 25, 24, 0.03);
+  padding: 8px 0 12px;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  color: var(--text-tertiary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+
+  lucide-icon {
+    color: var(--text-tertiary);
+    width: 22px;
+    height: 22px;
+  }
+
+  &.active {
+    color: var(--accent-brown);
+    font-weight: 600;
+
+    lucide-icon {
+      color: var(--accent-brown);
+    }
+  }
+}

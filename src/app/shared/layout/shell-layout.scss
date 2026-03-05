@@ -1,0 +1,31 @@
+@use '../../ui/styles/breakpoints' as bp;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+app-top-nav {
+  display: none;
+}
+
+app-bottom-nav {
+  display: flex;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (min-width: bp.$breakpoint-tablet) {
+  app-top-nav {
+    display: flex;
+  }
+
+  app-bottom-nav {
+    display: none;
+  }
+}
