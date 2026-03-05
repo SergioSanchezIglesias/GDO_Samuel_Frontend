@@ -1,0 +1,10 @@
+@for (item of visibleNavItems(); track item.route) {
+  <a
+    [routerLink]="item.route"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+  >
+    <lucide-icon [name]="item.icon" />
+    <span>{{ item.label }}</span>
+  </a>
+}
