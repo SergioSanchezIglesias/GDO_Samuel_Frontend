@@ -1,1 +1,32 @@
-<p>Retiro creado</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Retiro creado" [fontSize]="18" />
+  </div>
+
+  <div class="content">
+    <div class="success-icon">
+      <lucide-icon name="check" [size]="40" color="var(--accent-brown)" />
+    </div>
+
+    <h1 class="success-title">¡Retiro creado!</h1>
+    <p class="subtitle">Comparte este código con los participantes</p>
+
+    @if (loading()) {
+      <div class="code-card-skeleton"></div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (retiro()) {
+      <div class="code-card">
+        <span class="code-label">Código del retiro</span>
+        <span class="code-value">{{ formatCode(retiro()!.codigo) }}</span>
+        <span class="code-hint">Los participantes necesitarán este código para iniciar sesión</span>
+      </div>
+    }
+
+    <app-button label="Volver al listado" (clicked)="goToList()" />
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 const BUTTON_VARIANT = {
   PRIMARY: 'primary',
   SECONDARY: 'secondary',
+  DANGER: 'danger',
 } as const;
 
 type ButtonVariant = (typeof BUTTON_VARIANT)[keyof typeof BUTTON_VARIANT];
