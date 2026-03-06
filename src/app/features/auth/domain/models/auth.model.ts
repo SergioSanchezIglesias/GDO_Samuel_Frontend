@@ -21,6 +21,7 @@ export interface JwtPayload {
   rol: UserRole;
   iat: number;
   exp: number;
+  idRetiro?: number;
 }
 
 export interface AuthTokens {

@@ -4,6 +4,7 @@ export interface JwtPayload {
   rol: 'organizador' | 'usuario';
   iat: number;
   exp: number;
+  idRetiro?: number;
 }
 
 export function decodeJwtPayload(token: string): JwtPayload | null {
