@@ -12,8 +12,11 @@ import { OracionesApiAdapter } from './oraciones-api.adapter';
 
 const fakeApiUrl = 'http://test-api.com';
 
+// Fake JWT with payload { sub: '10', idRetiro: 5 }
+const fakeJwt = `header.${btoa(JSON.stringify({ sub: '10', idRetiro: 5 }))}.signature`;
+
 const mockTokenStorage = {
-  accessToken: signal<string | null>(null),
+  accessToken: signal<string | null>(fakeJwt),
   isAuthenticated: signal(false),
   userRole: signal(null),
   saveTokens: () => {},
@@ -104,7 +107,7 @@ describe('OracionesApiAdapter', () => {
 
       const req = httpTesting.expectOne(`${fakeApiUrl}/oraciones`);
       expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(dto);
+      expect(req.request.body).toEqual({ ...dto, usuarioId: 10, retiroId: 5 });
       req.flush(mockOracion);
     });
   });

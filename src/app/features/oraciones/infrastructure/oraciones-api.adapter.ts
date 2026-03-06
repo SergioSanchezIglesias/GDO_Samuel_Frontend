@@ -16,7 +16,9 @@ export class OracionesApiAdapter extends OracionesPort {
   private readonly tokenStorage = inject(TokenStoragePort);
 
   create(dto: CreateOracionDTO): Observable<Oracion> {
-    return this.http.post<Oracion>(`${this.apiUrl}/oraciones`, dto);
+    const usuarioId = this.getUsuarioIdFromToken();
+    const retiroId = this.getRetiroIdFromToken();
+    return this.http.post<Oracion>(`${this.apiUrl}/oraciones`, { ...dto, usuarioId, retiroId });
   }
 
   list(
