@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   effect,
   inject,
@@ -22,13 +21,22 @@ import { ListItemComponent } from '../../../../ui/components/list-item/list-item
 import { ScreenHeaderComponent } from '../../../../ui/components/screen-header/screen-header';
 import { SectionHeaderComponent } from '../../../../ui/components/section-header/section-header.component';
 import { TokenStoragePort } from '../../../auth/domain/ports/token-storage.port';
+import { GetRetiroInfoUseCase } from '../../application/get-retiro-info.use-case';
 import { GetSumatorioOracionesUseCase } from '../../application/get-sumatorio-oraciones.use-case';
 import { ListOracionesUseCase } from '../../application/list-oraciones.use-case';
 import type { Oracion, SumatorioOraciones } from '../../domain/models/oracion.model';
+import type { RetiroInfo } from '../../domain/models/retiro-info.model';
+import { ActivityGridComponent } from '../shared/activity-grid/activity-grid';
 
 @Component({
   selector: 'app-mis-actividades',
-  imports: [ScreenHeaderComponent, SectionHeaderComponent, ListItemComponent, LucideAngularModule],
+  imports: [
+    ScreenHeaderComponent,
+    SectionHeaderComponent,
+    ListItemComponent,
+    LucideAngularModule,
+    ActivityGridComponent,
+  ],
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -43,20 +51,18 @@ import type { Oracion, SumatorioOraciones } from '../../domain/models/oracion.mo
 export class MisActividadesComponent {
   private readonly listOracionesUseCase = inject(ListOracionesUseCase);
   private readonly getSumatorioUseCase = inject(GetSumatorioOracionesUseCase);
+  private readonly getRetiroInfoUseCase = inject(GetRetiroInfoUseCase);
   private readonly tokenStorage = inject(TokenStoragePort);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly oraciones = signal<Oracion[]>([]);
   readonly sumatorio = signal<SumatorioOraciones | null>(null);
+  readonly retiroInfoMap = signal<Map<number, RetiroInfo>>(new Map());
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
-
-  readonly totalOraciones = computed(() => this.oraciones().length);
-  readonly totalMisas = computed(() => this.sumatorio()?.misas ?? 0);
-  readonly totalAyunos = computed(() => this.sumatorio()?.ayunos ?? 0);
 
   constructor() {
     effect(() => {
@@ -65,7 +71,13 @@ export class MisActividadesComponent {
   }
 
   getOracionTitle(oracion: Oracion): string {
-    return `Registro #${oracion.id}`;
+    const info = this.retiroInfoMap().get(oracion.retiroId);
+    if (!info) return `Registro #${oracion.id}`;
+    const date = new Date(info.fechaInicio);
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${info.ubicacion} - ${dd}/${mm}/${yyyy}`;
   }
 
   getOracionSubtitle(oracion: Oracion): string {
@@ -74,6 +86,10 @@ export class MisActividadesComponent {
 
   navigateToRegistrar(): void {
     this.router.navigate(['/oraciones/nueva']);
+  }
+
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/oraciones', id]);
   }
 
   private getIdsFromToken(): { usuarioId: number; retiroId: number } | null {
@@ -107,6 +123,7 @@ export class MisActividadesComponent {
           this.totalPages.set(Math.ceil(response.total / 20) || 1);
           this.isLoading.set(false);
           this.loadSumatorio(ids.retiroId);
+          this.loadRetiroInfoForOraciones(response.data);
         },
         error: () => {
           this.error.set('Error al cargar las actividades. Inténtalo de nuevo.');
@@ -127,5 +144,26 @@ export class MisActividadesComponent {
           // Sumatorio is non-critical, fail silently
         },
       });
+  }
+
+  private loadRetiroInfoForOraciones(oraciones: Oracion[]): void {
+    const uniqueRetiroIds = [...new Set(oraciones.map((o) => o.retiroId))];
+    for (const retiroId of uniqueRetiroIds) {
+      this.getRetiroInfoUseCase
+        .execute(retiroId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (info) => {
+            this.retiroInfoMap.update((map) => {
+              const next = new Map(map);
+              next.set(retiroId, info);
+              return next;
+            });
+          },
+          error: () => {
+            // Retiro info is non-critical, fail silently
+          },
+        });
+    }
   }
 }

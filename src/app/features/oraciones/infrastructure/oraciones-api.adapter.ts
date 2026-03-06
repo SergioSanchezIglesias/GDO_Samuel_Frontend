@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { of, tap } from 'rxjs';
 import type { Observable } from 'rxjs';
 
 import { API_URL } from '../../../core/config/api.config';
@@ -7,6 +8,7 @@ import { decodeJwtPayload } from '../../../core/utils/jwt-decode';
 import type { PaginatedResponse } from '../../../shared/models/paginated-response.model';
 import { TokenStoragePort } from '../../auth/domain/ports/token-storage.port';
 import type { CreateOracionDTO, Oracion, SumatorioOraciones } from '../domain/models/oracion.model';
+import type { RetiroInfo } from '../domain/models/retiro-info.model';
 import { OracionesPort } from '../domain/ports/oraciones.port';
 
 @Injectable()
@@ -14,6 +16,7 @@ export class OracionesApiAdapter extends OracionesPort {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = inject(API_URL);
   private readonly tokenStorage = inject(TokenStoragePort);
+  private readonly retiroInfoCache = new Map<number, RetiroInfo>();
 
   create(dto: CreateOracionDTO): Observable<Oracion> {
     const usuarioId = this.getUsuarioIdFromToken();
@@ -41,6 +44,16 @@ export class OracionesApiAdapter extends OracionesPort {
 
   getSumatorio(retiroId: number): Observable<SumatorioOraciones> {
     return this.http.get<SumatorioOraciones>(`${this.apiUrl}/oraciones/sumatorio/${retiroId}`);
+  }
+
+  getRetiroInfo(retiroId: number): Observable<RetiroInfo> {
+    const cached = this.retiroInfoCache.get(retiroId);
+    if (cached) {
+      return of(cached);
+    }
+    return this.http
+      .get<RetiroInfo>(`${this.apiUrl}/retiros/${retiroId}/info`)
+      .pipe(tap((info) => this.retiroInfoCache.set(retiroId, info)));
   }
 
   getUsuarioIdFromToken(): number | null {

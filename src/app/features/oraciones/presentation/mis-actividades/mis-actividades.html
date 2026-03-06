@@ -21,22 +21,9 @@
     }
 
     @if (!isLoading()) {
-      <div class="summary-card">
-        <div class="summary-card__stat">
-          <span class="summary-card__value">{{ totalOraciones() }}</span>
-          <span class="summary-card__label">Registros</span>
-        </div>
-        <div class="summary-card__divider"></div>
-        <div class="summary-card__stat">
-          <span class="summary-card__value">{{ totalMisas() }}</span>
-          <span class="summary-card__label">Misas</span>
-        </div>
-        <div class="summary-card__divider"></div>
-        <div class="summary-card__stat">
-          <span class="summary-card__value">{{ totalAyunos() }}</span>
-          <span class="summary-card__label">Ayunos</span>
-        </div>
-      </div>
+      @if (sumatorio(); as s) {
+        <app-activity-grid [data]="s" />
+      }
 
       <app-section-header icon="history" title="Historial" />
 
@@ -44,6 +31,7 @@
         <app-list-item
           [title]="getOracionTitle(oracion)"
           [subtitle]="getOracionSubtitle(oracion)"
+          (itemClick)="navigateToDetail(oracion.id)"
         />
       } @empty {
         @if (!error()) {

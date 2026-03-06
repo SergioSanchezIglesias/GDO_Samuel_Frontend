@@ -1,0 +1,18 @@
+<div class="activity-grid">
+  @for (section of sections(); track section.title) {
+    <div class="activity-grid__section">
+      <div class="activity-grid__section-header">
+        <lucide-icon [name]="section.icon" class="activity-grid__section-icon" [size]="18"></lucide-icon>
+        <span class="activity-grid__section-title">{{ section.title }}</span>
+      </div>
+      <div class="activity-grid__cards">
+        @for (field of section.fields; track field.key) {
+          <div class="activity-grid__card">
+            <span class="activity-grid__card-value">{{ field.value }}</span>
+            <span class="activity-grid__card-label">{{ field.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

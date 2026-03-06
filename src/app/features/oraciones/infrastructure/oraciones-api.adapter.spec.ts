@@ -142,4 +142,52 @@ describe('OracionesApiAdapter', () => {
       req.flush(mockSumatorio);
     });
   });
+
+  describe('getRetiroInfo', () => {
+    const mockRetiroInfo = { id: 5, fechaInicio: '2024-03-15', ubicacion: 'Madrid' };
+
+    it('calls GET /retiros/:id/info on first call', () => {
+      adapter.getRetiroInfo(5).subscribe(res => {
+        expect(res).toEqual(mockRetiroInfo);
+      });
+
+      const req = httpTesting.expectOne(`${fakeApiUrl}/retiros/5/info`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockRetiroInfo);
+    });
+
+    it('returns cached value on second call for same retiroId without making a new HTTP call', () => {
+      // First call — primes the cache
+      adapter.getRetiroInfo(5).subscribe();
+      const req = httpTesting.expectOne(`${fakeApiUrl}/retiros/5/info`);
+      req.flush(mockRetiroInfo);
+
+      // Second call — must come from cache, no HTTP request
+      let result: typeof mockRetiroInfo | undefined;
+      adapter.getRetiroInfo(5).subscribe(res => {
+        result = res;
+      });
+
+      httpTesting.expectNone(`${fakeApiUrl}/retiros/5/info`);
+      expect(result).toEqual(mockRetiroInfo);
+    });
+
+    it('makes a new HTTP call for a different retiroId', () => {
+      const otherRetiroInfo = { id: 7, fechaInicio: '2024-06-01', ubicacion: 'Barcelona' };
+
+      // First call for retiroId 5
+      adapter.getRetiroInfo(5).subscribe();
+      const req5 = httpTesting.expectOne(`${fakeApiUrl}/retiros/5/info`);
+      req5.flush(mockRetiroInfo);
+
+      // Call for retiroId 7 — different id, must hit the network
+      adapter.getRetiroInfo(7).subscribe(res => {
+        expect(res).toEqual(otherRetiroInfo);
+      });
+
+      const req7 = httpTesting.expectOne(`${fakeApiUrl}/retiros/7/info`);
+      expect(req7.request.method).toBe('GET');
+      req7.flush(otherRetiroInfo);
+    });
+  });
 });

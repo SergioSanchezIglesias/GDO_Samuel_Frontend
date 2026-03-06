@@ -2,6 +2,7 @@ import type { Routes } from '@angular/router';
 
 import { CreateOracionUseCase } from './application/create-oracion.use-case';
 import { GetOracionByIdUseCase } from './application/get-oracion-by-id.use-case';
+import { GetRetiroInfoUseCase } from './application/get-retiro-info.use-case';
 import { GetSumatorioOracionesUseCase } from './application/get-sumatorio-oraciones.use-case';
 import { ListOracionesUseCase } from './application/list-oraciones.use-case';
 import { OracionesPort } from './domain/ports/oraciones.port';
@@ -16,6 +17,7 @@ export const ORACIONES_ROUTES: Routes = [
       ListOracionesUseCase,
       GetOracionByIdUseCase,
       GetSumatorioOracionesUseCase,
+      GetRetiroInfoUseCase,
     ],
     children: [
       {
@@ -30,6 +32,13 @@ export const ORACIONES_ROUTES: Routes = [
         loadComponent: () =>
           import('./presentation/registrar-actividades/registrar-actividades').then(
             (m) => m.RegistrarActividadesComponent,
+          ),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./presentation/detalle-oracion/detalle-oracion').then(
+            (m) => m.DetalleOracionComponent,
           ),
       },
     ],
