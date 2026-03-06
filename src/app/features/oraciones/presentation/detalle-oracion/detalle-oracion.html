@@ -1,0 +1,24 @@
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header [title]="getHeaderTitle()" />
+  </div>
+
+  <div class="content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="skeleton skeleton--title"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (!isLoading() && oracion()) {
+      <app-activity-grid [data]="oracion()!" />
+    }
+  </div>
+</div>
