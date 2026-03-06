@@ -4,6 +4,7 @@ const INPUT_TYPE = {
   TEXT: 'text',
   EMAIL: 'email',
   PASSWORD: 'password',
+  DATE: 'date',
 } as const;
 
 type InputType = (typeof INPUT_TYPE)[keyof typeof INPUT_TYPE];

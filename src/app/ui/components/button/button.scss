@@ -36,6 +36,15 @@
     }
   }
 
+  &--danger {
+    background: var(--accent-red);
+    color: var(--white);
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.9);
+    }
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;

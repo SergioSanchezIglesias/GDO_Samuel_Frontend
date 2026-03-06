@@ -1,0 +1,18 @@
+<div class="confirm-dialog-overlay" (click)="cancelled.emit()">
+  <div class="confirm-dialog-card" (click)="$event.stopPropagation()">
+    <p class="confirm-dialog__title">{{ title() }}</p>
+    <p class="confirm-dialog__message">{{ message() }}</p>
+    <div class="confirm-dialog__actions">
+      <app-button
+        [label]="cancelLabel()"
+        variant="secondary"
+        (clicked)="cancelled.emit()"
+      />
+      <app-button
+        [label]="confirmLabel()"
+        variant="danger"
+        (clicked)="confirmed.emit()"
+      />
+    </div>
+  </div>
+</div>

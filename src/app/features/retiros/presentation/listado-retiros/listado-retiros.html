@@ -1,1 +1,48 @@
-<p>Listado de retiros</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Retiros" [fontSize]="18" />
+    <button class="add-btn" (click)="navigateToCreate()" aria-label="Crear retiro">
+      <lucide-icon name="plus" [size]="18" />
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="search-bar">
+      <lucide-icon name="search" [size]="16" color="var(--text-tertiary)" />
+      <input
+        type="text"
+        placeholder="Filtrar por ubicación..."
+        [value]="ubicacionFilter()"
+        (input)="onFilterInput($event)"
+      />
+    </div>
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (!loading()) {
+      @for (retiro of retiros(); track retiro.id) {
+        <app-list-item
+          [title]="getRetiroTitle(retiro)"
+          [subtitle]="getRetiroSubtitle(retiro)"
+          (itemClick)="navigateToDetail(retiro.id)"
+        />
+      } @empty {
+        @if (!error()) {
+          <div class="empty-state">
+            <p>No hay retiros registrados</p>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

@@ -1,1 +1,35 @@
-<p>Crear retiro</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Nuevo retiro" [fontSize]="18" />
+  </div>
+
+  <div class="content">
+    <div class="form-card">
+      @if (error()) {
+        <div class="form-error">{{ error() }}</div>
+      }
+
+      <app-input
+        label="Fecha de inicio"
+        type="date"
+        [(value)]="fechaInicio"
+      />
+      <app-input
+        label="Fecha de fin"
+        type="date"
+        [(value)]="fechaFin"
+      />
+      <app-input
+        label="Ubicación"
+        placeholder="Ej: Ávila, Madrid..."
+        [(value)]="ubicacion"
+      />
+      <app-button
+        label="Crear retiro"
+        [loading]="loading()"
+        [disabled]="!isFormValid()"
+        (clicked)="onSubmit()"
+      />
+    </div>
+  </div>
+</div>

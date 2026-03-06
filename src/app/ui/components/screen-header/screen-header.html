@@ -1,0 +1,6 @@
+<div class="screen-header">
+  <button class="screen-header__back" (click)="goBack()" type="button" aria-label="Volver">
+    <lucide-icon name="arrow-left" [size]="24" />
+  </button>
+  <span class="screen-header__title" [style.font-size.px]="fontSize()">{{ title() }}</span>
+</div>

@@ -1,1 +1,62 @@
-<p>Detalle retiro</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Detalle retiro" [fontSize]="18" />
+    <button class="edit-btn" (click)="navigateToEdit()" aria-label="Editar retiro">
+      <lucide-icon name="pencil" [size]="18" />
+    </button>
+  </div>
+
+  <div class="content">
+    @if (loading()) {
+      <div class="skeleton code-card-skeleton"></div>
+      <div class="skeleton info-card-skeleton"></div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (retiro()) {
+      <div class="code-card">
+        <lucide-icon name="key-round" [size]="24" color="var(--accent-brown)" />
+        <span class="code-label">Código del retiro</span>
+        <span class="code-value">{{ formatCode(retiro()!.codigo) }}</span>
+        <span class="code-hint">Comparte este código con los participantes</span>
+      </div>
+
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Fecha de inicio</span>
+          <span class="info-value">{{ formatDateForDisplay(retiro()!.fechaInicio) }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="info-row">
+          <span class="info-label">Fecha de fin</span>
+          <span class="info-value">{{ formatDateForDisplay(retiro()!.fechaFin) }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="info-row">
+          <span class="info-label">Ubicación</span>
+          <span class="info-value">{{ retiro()!.ubicacion }}</span>
+        </div>
+      </div>
+
+      <app-button
+        label="Eliminar retiro"
+        variant="danger"
+        [loading]="deleting()"
+        (clicked)="showDeleteDialog.set(true)"
+      />
+    }
+  </div>
+
+  @if (showDeleteDialog()) {
+    <app-confirm-dialog
+      title="Eliminar retiro"
+      message="Esta acción eliminará el retiro y TODAS sus oraciones asociadas. Esta acción no se puede deshacer."
+      confirmLabel="Eliminar"
+      (confirmed)="onDeleteConfirmed()"
+      (cancelled)="onDeleteCancelled()"
+    />
+  }
+</div>
