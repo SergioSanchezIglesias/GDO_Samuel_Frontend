@@ -1,13 +1,69 @@
-<div class="dashboard">
-  <nav class="dashboard__nav">
-    <a class="dashboard__nav-item" [routerLink]="['/dashboard']">Dashboard</a>
-    <a class="dashboard__nav-item" [routerLink]="['/oraciones']">Oraciones</a>
-    @if (userRole() === 'organizador') {
-      <a class="dashboard__nav-item" [routerLink]="['/retiros']">Retiros</a>
-      <a class="dashboard__nav-item" [routerLink]="['/usuarios']">Usuarios</a>
+<div class="screen">
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="top-bar__title">
+      <span class="top-bar__label">GDO Samuel</span>
+      @if (retiroInfo(); as info) {
+        <span class="top-bar__retiro">{{ info.ubicacion }}</span>
+      } @else if (!isLoading()) {
+        <span class="top-bar__retiro">Retiro actual</span>
+      }
+    </div>
+    <div class="top-bar__actions">
+      <button class="top-bar__btn" (click)="navigateToRegistrar()" aria-label="Registrar actividades">
+        <lucide-icon name="plus" [size]="18" />
+      </button>
+      <button class="top-bar__btn top-bar__btn--muted" (click)="onLogout()" aria-label="Cerrar sesión">
+        <lucide-icon name="log-out" [size]="18" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="skeleton skeleton--retiro"></div>
+        <div class="skeleton skeleton--grid"></div>
+        <div class="skeleton skeleton--grid"></div>
+      </div>
     }
-  </nav>
-  <h1>Dashboard</h1>
-  <p>Bienvenido a GDO Samuel</p>
-  <button class="dashboard__logout" (click)="onLogout()">Cerrar sesión</button>
+
+    @if (!isLoading()) {
+      @if (error()) {
+        <div class="error-message">
+          <p>{{ error() }}</p>
+          <button class="retry-btn" (click)="reload()">Reintentar</button>
+        </div>
+      }
+
+      @if (getRetiroIdFromToken() === null && !error()) {
+        <!-- Empty state: no active retiro -->
+        <div class="empty-state">
+          <p class="empty-state__title">Sin retiro activo</p>
+          <p class="empty-state__subtitle">No tienes un retiro asignado en este momento.</p>
+        </div>
+      }
+
+      @if (sumatorio(); as s) {
+        <!-- Retiro info card -->
+        @if (retiroInfo(); as info) {
+          <div class="retiro-card">
+            <span class="retiro-card__label">Retiro activo</span>
+            <span class="retiro-card__ubicacion">{{ info.ubicacion }}</span>
+            <span class="retiro-card__fecha">Desde {{ formatDate(info.fechaInicio) }}</span>
+          </div>
+        }
+
+        <!-- Activity grid -->
+        <app-activity-grid [data]="s" />
+
+        <!-- CTA -->
+        <button class="cta-btn" (click)="navigateToRegistrar()">
+          <lucide-icon name="plus" [size]="16" />
+          Registrar actividades
+        </button>
+      }
+    }
+  </div>
 </div>
