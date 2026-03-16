@@ -1,1 +1,45 @@
-<p>Mis actividades</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Mis actividades" [fontSize]="18" />
+    <button class="add-btn" (click)="navigateToRegistrar()" aria-label="Registrar actividades">
+      <lucide-icon name="plus" [size]="18" />
+    </button>
+  </div>
+
+  <div class="content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="skeleton skeleton--card"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (!isLoading()) {
+      @if (sumatorio(); as s) {
+        <app-activity-grid [data]="s" />
+      }
+
+      <app-section-header icon="history" title="Historial" />
+
+      @for (oracion of oraciones(); track oracion.id) {
+        <app-list-item
+          [title]="getOracionTitle(oracion)"
+          [subtitle]="getOracionSubtitle(oracion)"
+          (itemClick)="navigateToDetail(oracion.id)"
+        />
+      } @empty {
+        @if (!error()) {
+          <div class="empty-state">
+            <p>No hay actividades registradas</p>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

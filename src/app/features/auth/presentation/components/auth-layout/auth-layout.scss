@@ -19,10 +19,10 @@
 }
 
 .auth-logo {
-  width: 80px;
-  height: 90px;
+  width: 120px;
+  height: auto;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .auth-title {

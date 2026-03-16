@@ -1,1 +1,38 @@
-<p>Registrar actividades</p>
+<div class="screen">
+  <div class="top-bar">
+    <app-screen-header title="Registrar actividades" [fontSize]="18" />
+  </div>
+
+  <div class="content">
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @for (section of sections; track section.title) {
+      <div class="section">
+        <app-section-header [icon]="section.icon" [title]="section.title" />
+
+        <div class="section__fields">
+          @for (field of section.fields; track field.key) {
+            <div class="field-row">
+              <span class="field-row__label">{{ field.label }}</span>
+              <app-stepper
+                [value]="getFieldValue(field.key)"
+                (valueChange)="setFieldValue(field.key, $event)"
+              />
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="footer">
+    <app-button
+      label="Registrar actividades"
+      [loading]="isLoading()"
+      [disabled]="isLoading()"
+      (clicked)="onSubmit()"
+    />
+  </div>
+</div>
