@@ -16,16 +16,19 @@ export class TokenStorageAdapter extends TokenStoragePort {
 
   private readonly _accessToken = signal<string | null>(null);
   private readonly _userRole = signal<UserRole | null>(null);
+  private readonly _idRetiro = signal<number | null>(null);
   private refreshTimerId: ReturnType<typeof setTimeout> | null = null;
 
   readonly accessToken = this._accessToken.asReadonly();
   readonly isAuthenticated = computed(() => this._accessToken() !== null);
   readonly userRole = this._userRole.asReadonly();
+  readonly idRetiro = this._idRetiro.asReadonly();
 
   saveTokens(tokens: AuthTokens): void {
     this._accessToken.set(tokens.accessToken);
     const payload = decodeJwtPayload(tokens.accessToken);
     this._userRole.set(payload?.rol ?? null);
+    this._idRetiro.set(payload?.idRetiro ?? null);
     localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     this.scheduleProactiveRefresh();
   }
@@ -38,6 +41,7 @@ export class TokenStorageAdapter extends TokenStoragePort {
     this.cancelProactiveRefresh();
     this._accessToken.set(null);
     this._userRole.set(null);
+    this._idRetiro.set(null);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 

@@ -9,6 +9,7 @@ describe('authGuard', () => {
   const mockTokenStorage = {
     accessToken: vi.fn(() => null),
     isAuthenticated: vi.fn(() => false),
+    idRetiro: vi.fn<() => number | null>(() => null),
     saveTokens: vi.fn(),
     getRefreshToken: vi.fn(),
     clearTokens: vi.fn(),

@@ -32,7 +32,10 @@ export interface AuthTokens {
 export interface LoginRequest {
   email: string;
   password: string;
-  codigoRetiro?: string;
+}
+
+export interface VincularRetiroRequest {
+  codigo: string;
 }
 
 export interface RegisterRequest {

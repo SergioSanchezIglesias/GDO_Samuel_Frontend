@@ -35,7 +35,6 @@ describe('AuthApiAdapter', () => {
     const loginRequest: LoginRequest = {
       email: 'test@example.com',
       password: 'password123',
-      codigoRetiro: '123456',
     };
     const mockResponse = {
       accessToken: 'access-token',

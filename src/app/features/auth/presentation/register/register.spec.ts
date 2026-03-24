@@ -1,10 +1,14 @@
+import { signal } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { User } from '../../domain/models/auth.model';
+import type { UserRole } from '../../domain/models/auth.model';
+import { API_URL } from '../../../../core/config/api.config';
 import { RegisterUseCase } from '../../application/register.usecase';
+import { TokenStoragePort } from '../../domain/ports/token-storage.port';
 import { RegisterComponent } from './register';
 
 describe('RegisterComponent', () => {
@@ -14,6 +18,16 @@ describe('RegisterComponent', () => {
 
   const mockRegisterUseCase = {
     execute: vi.fn(),
+  };
+
+  const mockTokenStorage = {
+    accessToken: signal<string | null>(null),
+    isAuthenticated: signal(false),
+    userRole: signal<UserRole | null>(null),
+    idRetiro: signal<number | null>(null),
+    saveTokens: vi.fn(),
+    getRefreshToken: vi.fn(),
+    clearTokens: vi.fn(),
   };
 
   const mockUser: User = {
@@ -26,12 +40,15 @@ describe('RegisterComponent', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockTokenStorage.idRetiro.set(null);
 
     await TestBed.configureTestingModule({
       imports: [RegisterComponent],
       providers: [
         provideRouter([{ path: 'dashboard', component: RegisterComponent }]),
         { provide: RegisterUseCase, useValue: mockRegisterUseCase },
+        { provide: TokenStoragePort, useValue: mockTokenStorage },
+        { provide: API_URL, useValue: 'http://localhost:3000' },
       ],
     }).compileComponents();
 
@@ -76,6 +93,36 @@ describe('RegisterComponent', () => {
     });
   });
 
+  it('should navigate to /auth/vincular-retiro when idRetiro is null after register', async () => {
+    mockTokenStorage.idRetiro.set(null);
+    mockRegisterUseCase.execute.mockReturnValue(of(mockUser));
+
+    component.nombre.set('New User');
+    component.email.set('new@example.com');
+    component.password.set('password123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.onSubmit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/auth/vincular-retiro']);
+  });
+
+  it('should navigate to /dashboard when idRetiro has a value after register', async () => {
+    mockTokenStorage.idRetiro.set(5);
+    mockRegisterUseCase.execute.mockReturnValue(of(mockUser));
+
+    component.nombre.set('New User');
+    component.email.set('new@example.com');
+    component.password.set('password123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    component.onSubmit();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+  });
+
   it('should show "Este email ya está registrado" on 409 error', async () => {
     mockRegisterUseCase.execute.mockReturnValue(throwError(() => ({ status: 409 })));
 
@@ -92,20 +139,6 @@ describe('RegisterComponent', () => {
     const errorDiv = fixture.nativeElement.querySelector('.auth-error');
     expect(errorDiv).toBeTruthy();
     expect(errorDiv.textContent.trim()).toBe('Este email ya está registrado');
-  });
-
-  it('should navigate to /dashboard on success', async () => {
-    mockRegisterUseCase.execute.mockReturnValue(of(mockUser));
-
-    component.nombre.set('New User');
-    component.email.set('new@example.com');
-    component.password.set('password123');
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    component.onSubmit();
-
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
   it('should show generic error on server error', async () => {
@@ -149,5 +182,34 @@ describe('RegisterComponent', () => {
     component.onSubmit();
 
     expect(component.loading()).toBe(true);
+  });
+
+  it('should render divider and Google button', () => {
+    const divider = fixture.nativeElement.querySelector('.auth-divider');
+    const googleBtn = fixture.nativeElement.querySelector('.google-btn');
+
+    expect(divider).toBeTruthy();
+    expect(divider.textContent.trim()).toBe('o');
+    expect(googleBtn).toBeTruthy();
+    expect(googleBtn.textContent.trim()).toBe('Continuar con Google');
+  });
+
+  it('should redirect to google oauth on Google button click', () => {
+    const originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      value: { ...originalLocation, href: '' },
+      writable: true,
+      configurable: true,
+    });
+
+    component.onGoogleLogin();
+
+    expect(window.location.href).toBe('http://localhost:3000/auth/google');
+
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
   });
 });

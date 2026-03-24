@@ -17,13 +17,6 @@
       [(value)]="password"
       [errorMessage]="passwordError()"
     />
-    <app-input
-      label="Código de retiro"
-      placeholder="6 dígitos"
-      hint="Obligatorio para participantes"
-      [(value)]="codigoRetiro"
-      [errorMessage]="codigoError()"
-    />
     <app-button
       label="Iniciar sesión"
       type="submit"
@@ -31,6 +24,10 @@
       [loading]="loading()"
       (clicked)="onSubmit()"
     />
+    <div class="auth-divider">
+      <span>o</span>
+    </div>
+    <button class="google-btn" (click)="onGoogleLogin()">Continuar con Google</button>
   </div>
   <app-text-link
     prefixText="¿No tienes cuenta?"

@@ -12,6 +12,7 @@ describe('roleGuard', () => {
     accessToken: vi.fn(),
     isAuthenticated: vi.fn(),
     userRole: vi.fn(),
+    idRetiro: vi.fn<() => number | null>(() => null),
     saveTokens: vi.fn(),
     getRefreshToken: vi.fn(),
     clearTokens: vi.fn(),

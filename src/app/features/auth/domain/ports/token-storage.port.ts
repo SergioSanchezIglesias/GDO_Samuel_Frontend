@@ -6,6 +6,7 @@ export abstract class TokenStoragePort {
   abstract readonly accessToken: Signal<string | null>;
   abstract readonly isAuthenticated: Signal<boolean>;
   abstract readonly userRole: Signal<UserRole | null>;
+  abstract readonly idRetiro: Signal<number | null>;
 
   abstract saveTokens(tokens: AuthTokens): void;
   abstract getRefreshToken(): string | null;

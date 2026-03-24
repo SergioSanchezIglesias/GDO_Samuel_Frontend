@@ -13,4 +13,5 @@ export abstract class AuthPort {
   abstract register(request: RegisterRequest): Observable<RegisterResponse>;
   abstract refresh(refreshToken: string): Observable<AuthTokens>;
   abstract logout(): Observable<void>;
+  abstract vincularRetiro(codigo: string): Observable<AuthTokens>;
 }

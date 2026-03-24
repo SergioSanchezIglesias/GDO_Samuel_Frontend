@@ -19,6 +19,7 @@ const mockTokenStorage = {
   accessToken: signal<string | null>(fakeJwt),
   isAuthenticated: signal(false),
   userRole: signal(null),
+  idRetiro: signal<number | null>(null),
   saveTokens: () => {},
   getRefreshToken: () => null,
   clearTokens: () => {},

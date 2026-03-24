@@ -1,0 +1,25 @@
+<app-auth-layout title="Vincula tu retiro" subtitle="Introduce el código de 6 dígitos que te ha proporcionado tu organizador">
+  <div class="auth-card">
+    @if (errorMessage()) {
+      <div class="auth-error">{{ errorMessage() }}</div>
+    }
+    <app-input
+      label="Código de retiro"
+      placeholder="6 dígitos"
+      [(value)]="codigo"
+      [errorMessage]="codigoError()"
+    />
+    <app-button
+      label="Vincular retiro"
+      type="submit"
+      [disabled]="!isFormValid()"
+      [loading]="loading()"
+      (clicked)="onSubmit()"
+    />
+    @if (tokenStorage.userRole() !== 'usuario') {
+      <button class="skip-link" type="button" (click)="onSkip()">
+        Omitir (solo organizadores)
+      </button>
+    }
+  </div>
+</app-auth-layout>
