@@ -1,6 +1,7 @@
 import type { Routes } from '@angular/router';
 
 import { authGuard } from './core/guards/auth.guard';
+import { retiroGuard } from './core/guards/retiro.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { ShellLayoutComponent } from './shared/layout';
 
@@ -12,7 +13,7 @@ export const routes: Routes = [
   {
     path: '',
     component: ShellLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, retiroGuard],
     children: [
       {
         path: 'dashboard',

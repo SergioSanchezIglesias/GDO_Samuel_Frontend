@@ -1,0 +1,36 @@
+.auth-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-error {
+  background: rgba(196, 51, 74, 0.1);
+  color: var(--accent-red);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.skip-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  align-self: center;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}

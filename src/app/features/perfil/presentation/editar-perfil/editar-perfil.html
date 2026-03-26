@@ -1,0 +1,65 @@
+<div class="screen">
+  <!-- Header with back button -->
+  <div class="top-bar">
+    <app-screen-header title="Editar perfil" [fontSize]="18" />
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (!isLoading()) {
+      <div class="form">
+        <!-- Personal info section -->
+        <div class="form-section">
+          <app-input
+            label="Nombre"
+            placeholder="Tu nombre completo"
+            [(value)]="name"
+            [errorMessage]="nameError()"
+          />
+          <app-input
+            label="Email"
+            placeholder="tu@email.com"
+            type="email"
+            [(value)]="email"
+            [errorMessage]="emailError()"
+          />
+        </div>
+
+        <!-- Password section — only for local users -->
+        @if (!isGoogleUser()) {
+          <div class="form-section">
+            <p class="section-label">Cambiar contraseña</p>
+            <app-input
+              label="Nueva contraseña"
+              placeholder="Nueva contraseña"
+              type="password"
+              [(value)]="newPassword"
+            />
+          </div>
+        }
+
+        <!-- Save button -->
+        <div class="form-actions">
+          <app-button
+            label="Guardar cambios"
+            variant="primary"
+            [loading]="isSaving()"
+            (clicked)="onSubmit()"
+          />
+        </div>
+      </div>
+    }
+  </div>
+</div>

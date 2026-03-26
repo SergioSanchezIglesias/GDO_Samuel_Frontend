@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,16 +7,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { EMPTY, catchError, forkJoin, tap } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import {
-  LogOut,
   Plus,
   LUCIDE_ICONS,
   LucideAngularModule,
   LucideIconProvider,
 } from 'lucide-angular';
-
-import { API_URL } from '../../../core/config/api.config';
 import { decodeJwtPayload } from '../../../core/utils/jwt-decode';
 import { TokenStoragePort } from '../../auth/domain/ports/token-storage.port';
 import { GetRetiroInfoUseCase } from '../../oraciones/application/get-retiro-info.use-case';
@@ -33,7 +29,7 @@ import { ActivityGridComponent } from '../../oraciones/presentation/shared/activ
     {
       provide: LUCIDE_ICONS,
       multi: true,
-      useValue: new LucideIconProvider({ LogOut, Plus }),
+      useValue: new LucideIconProvider({ Plus }),
     },
   ],
   templateUrl: './dashboard.html',
@@ -42,8 +38,6 @@ import { ActivityGridComponent } from '../../oraciones/presentation/shared/activ
 })
 export class DashboardComponent {
   private readonly tokenStorage = inject(TokenStoragePort);
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = inject(API_URL);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getSumatorioUseCase = inject(GetSumatorioOracionesUseCase);
@@ -107,23 +101,6 @@ export class DashboardComponent {
   }
 
   navigateToRegistrar(): void {
-    this.router.navigate(['/oraciones/nueva']);
-  }
-
-  onLogout(): void {
-    this.http
-      .post<void>(`${this.apiUrl}/auth/logout`, {})
-      .pipe(
-        tap(() => {
-          this.tokenStorage.clearTokens();
-          this.router.navigate(['/auth/login']);
-        }),
-        catchError(() => {
-          this.tokenStorage.clearTokens();
-          this.router.navigate(['/auth/login']);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
+    void this.router.navigate(['/oraciones/nueva']);
   }
 }

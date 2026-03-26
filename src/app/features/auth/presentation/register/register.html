@@ -30,6 +30,10 @@
       [loading]="loading()"
       (clicked)="onSubmit()"
     />
+    <div class="auth-divider">
+      <span>o</span>
+    </div>
+    <button class="google-btn" (click)="onGoogleLogin()">Continuar con Google</button>
   </div>
   <app-text-link
     prefixText="¿Ya tienes cuenta?"

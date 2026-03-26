@@ -1,0 +1,11 @@
+<div class="callback-container">
+  @if (errorMessage()) {
+    <div class="callback-error">
+      <p>{{ errorMessage() }}</p>
+      <p class="callback-redirect">Redirigiendo al login...</p>
+    </div>
+  } @else {
+    <div class="callback-spinner"></div>
+    <p class="callback-text">Verificando tu cuenta...</p>
+  }
+</div>

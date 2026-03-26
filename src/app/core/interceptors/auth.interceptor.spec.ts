@@ -17,6 +17,7 @@ describe('authInterceptor', () => {
   const mockTokenStorage = {
     accessToken: vi.fn<() => string | null>(() => null),
     isAuthenticated: vi.fn<() => boolean>(() => false),
+    idRetiro: vi.fn<() => number | null>(() => null),
     saveTokens: vi.fn(),
     getRefreshToken: vi.fn<() => string | null>(() => null),
     clearTokens: vi.fn(),

@@ -2,10 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signa
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
+import { API_URL } from '../../../../core/config/api.config';
 import { ButtonComponent } from '../../../../ui/components/button/button';
 import { InputComponent } from '../../../../ui/components/input/input';
 import { TextLinkComponent } from '../../../../ui/components/text-link/text-link';
 import { RegisterUseCase } from '../../application/register.usecase';
+import { TokenStoragePort } from '../../domain/ports/token-storage.port';
 import { AuthLayoutComponent } from '../components/auth-layout/auth-layout';
 
 @Component({
@@ -17,8 +19,10 @@ import { AuthLayoutComponent } from '../components/auth-layout/auth-layout';
 })
 export class RegisterComponent {
   private readonly registerUseCase = inject(RegisterUseCase);
+  private readonly tokenStorage = inject(TokenStoragePort);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly apiUrl = inject(API_URL);
 
   readonly nombre = signal('');
   readonly email = signal('');
@@ -54,6 +58,10 @@ export class RegisterComponent {
       !this.passwordError(),
   );
 
+  onGoogleLogin(): void {
+    window.location.href = `${this.apiUrl}/auth/google`;
+  }
+
   onSubmit(): void {
     if (!this.isFormValid()) return;
 
@@ -68,7 +76,14 @@ export class RegisterComponent {
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => {
+          const idRetiro = this.tokenStorage.idRetiro();
+          if (idRetiro === null) {
+            this.router.navigate(['/auth/vincular-retiro']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        },
         error: (err) => {
           this.loading.set(false);
           if (err.status === 409) {

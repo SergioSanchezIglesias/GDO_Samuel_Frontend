@@ -11,6 +11,7 @@ class MockTokenStoragePort extends TokenStoragePort {
   readonly accessToken = signal<string | null>(null);
   readonly isAuthenticated = signal(false);
   readonly userRole = signal<UserRole | null>(null);
+  readonly idRetiro = signal<number | null>(null);
   saveTokens = () => {};
   getRefreshToken = () => null;
   clearTokens = () => {};

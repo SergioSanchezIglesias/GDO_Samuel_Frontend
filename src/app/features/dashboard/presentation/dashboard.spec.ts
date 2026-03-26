@@ -1,5 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -67,6 +67,7 @@ function makeMockTokenStorage(token: string | null) {
     accessToken: signal<string | null>(token),
     isAuthenticated: signal(true),
     userRole: signal(null),
+    idRetiro: signal<number | null>(null),
     saveTokens: () => {},
     getRefreshToken: () => null,
     clearTokens: vi.fn(),
@@ -369,75 +370,25 @@ describe('DashboardComponent — navigation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Suite: logout
+// Suite: logout was moved to LogoutUseCase — verified in logout.use-case.spec.ts
+// DashboardComponent no longer contains onLogout() or HttpClient.
 // ---------------------------------------------------------------------------
 
-describe('DashboardComponent — logout', () => {
-  let fixture: ComponentFixture<DashboardComponent>;
+describe('DashboardComponent — logout removed', () => {
   let component: DashboardComponent;
-  let router: Router;
-  let httpMock: HttpTestingController;
-  let mockTokenStorageWithSpy: ReturnType<typeof makeMockTokenStorage>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    mockGetSumatorioUseCase.execute.mockReturnValue(of(mockSumatorio));
-    mockGetRetiroInfoUseCase.execute.mockReturnValue(of(mockRetiroInfo));
-    mockTokenStorageWithSpy = makeMockTokenStorage(fakeTokenWithRetiro);
+    await buildTestBed();
 
-    await TestBed.configureTestingModule({
-      imports: [DashboardComponent],
-      providers: [
-        provideRouter([]),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: API_URL, useValue: 'http://localhost:3000' },
-        { provide: GetSumatorioOracionesUseCase, useValue: mockGetSumatorioUseCase },
-        { provide: GetRetiroInfoUseCase, useValue: mockGetRetiroInfoUseCase },
-        { provide: TokenStoragePort, useValue: mockTokenStorageWithSpy },
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(DashboardComponent);
+    const fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
-    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     await fixture.whenStable();
   });
 
-  it('calls clearTokens and navigates to /auth/login on successful logout', async () => {
-    const navigateSpy = vi.spyOn(router, 'navigate');
-
-    component.onLogout();
-
-    const req = httpMock.expectOne('http://localhost:3000/auth/logout');
-    req.flush(null);
-
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(mockTokenStorageWithSpy.clearTokens).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledWith(['/auth/login']);
-
-    httpMock.verify();
-  });
-
-  it('still clears tokens and navigates to /auth/login when logout HTTP call fails', async () => {
-    const navigateSpy = vi.spyOn(router, 'navigate');
-
-    component.onLogout();
-
-    const req = httpMock.expectOne('http://localhost:3000/auth/logout');
-    req.error(new ProgressEvent('error'));
-
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(mockTokenStorageWithSpy.clearTokens).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledWith(['/auth/login']);
-
-    httpMock.verify();
+  it('does NOT have an onLogout method', () => {
+    expect((component as unknown as Record<string, unknown>)['onLogout']).toBeUndefined();
   });
 });
 

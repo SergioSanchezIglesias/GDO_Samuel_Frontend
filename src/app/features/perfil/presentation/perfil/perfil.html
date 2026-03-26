@@ -1,1 +1,78 @@
-<p>Perfil</p>
+<div class="screen">
+  <!-- Top bar -->
+  <div class="top-bar">
+    <span class="top-bar__title">Mi perfil</span>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="skeleton skeleton--avatar"></div>
+        <div class="skeleton skeleton--text"></div>
+        <div class="skeleton skeleton--card"></div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (!isLoading() && profile(); as p) {
+      <!-- Avatar section -->
+      <div class="avatar-section">
+        <div class="avatar">
+          <span class="avatar__initials">{{ getInitials() }}</span>
+        </div>
+        <div class="avatar-info">
+          <span class="avatar-info__name">{{ p.name }}</span>
+          <span class="avatar-info__email">{{ p.email }}</span>
+          @if (p.provider === 'google') {
+            <span class="provider-badge">Cuenta de Google</span>
+          }
+        </div>
+      </div>
+
+      <!-- Info section -->
+      <app-section-header icon="user" title="Información personal" />
+
+      <div class="info-card">
+        <div class="info-card__row">
+          <span class="info-card__label">Nombre</span>
+          <span class="info-card__value">{{ p.name }}</span>
+        </div>
+        <div class="info-card__divider"></div>
+        <div class="info-card__row">
+          <span class="info-card__label">Email</span>
+          <span class="info-card__value">{{ p.email }}</span>
+        </div>
+      </div>
+
+      <!-- Account section -->
+      <app-section-header icon="log-out" title="Cuenta" />
+
+      <div class="action-list">
+        <app-list-item
+          title="Editar perfil"
+          subtitle="Nombre y correo electrónico"
+          (itemClick)="onEdit()"
+        />
+        @if (p.provider === 'local') {
+          <app-list-item
+            title="Cambiar contraseña"
+            subtitle="Actualiza tu contraseña"
+            (itemClick)="onEdit()"
+          />
+        }
+      </div>
+
+      <!-- Logout button -->
+      <div class="logout-section">
+        <button class="logout-btn" type="button" (click)="onLogout()" aria-label="Cerrar sesión">
+          <lucide-icon name="log-out" [size]="18" />
+          Cerrar sesión
+        </button>
+      </div>
+    }
+  </div>
+</div>
