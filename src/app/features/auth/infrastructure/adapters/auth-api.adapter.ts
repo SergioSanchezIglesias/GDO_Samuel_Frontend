@@ -34,6 +34,6 @@ export class AuthApiAdapter extends AuthPort {
   }
 
   vincularRetiro(codigo: string): Observable<AuthTokens> {
-    return this.http.post<AuthTokens>(`${this.apiUrl}/auth/vincular-retiro`, { codigo });
+    return this.http.post<AuthTokens>(`${this.apiUrl}/auth/vincular-retiro`, { codigoRetiro: codigo });
   }
 }
