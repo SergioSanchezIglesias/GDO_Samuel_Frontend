@@ -22,19 +22,20 @@
 
     @if (!isLoading()) {
       @if (sumatorio(); as s) {
+        <app-section-header icon="sigma" title="Total acumulado" />
         <app-activity-grid [data]="s" />
       }
 
-      <app-section-header icon="history" title="Historial" />
+      @if (!error()) {
+        <app-section-header icon="history" title="Historial" />
 
-      @for (oracion of oraciones(); track oracion.id) {
-        <app-list-item
-          [title]="getOracionTitle(oracion)"
-          [subtitle]="getOracionSubtitle(oracion)"
-          (itemClick)="navigateToDetail(oracion.id)"
-        />
-      } @empty {
-        @if (!error()) {
+        @for (retiro of retiros(); track retiro.oracionId) {
+          <app-list-item
+            [title]="retiro.ubicacion"
+            [subtitle]="getRetiroSubtitle(retiro)"
+            (itemClick)="navigateToDetail(retiro.oracionId)"
+          />
+        } @empty {
           <div class="empty-state">
             <p>No hay actividades registradas</p>
           </div>

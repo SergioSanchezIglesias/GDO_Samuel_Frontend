@@ -93,6 +93,9 @@ describe('DetalleOracionComponent', () => {
     expect(title).toBe('Madrid - 15/03/2024');
   });
 
+});
+
+describe('DetalleOracionComponent — retiro info fallback', () => {
   it('falls back to "Registro #N" when retiro info fetch fails', async () => {
     vi.clearAllMocks();
     await buildTestBed('42', of(mockOracion), throwError(() => new Error('not found')));

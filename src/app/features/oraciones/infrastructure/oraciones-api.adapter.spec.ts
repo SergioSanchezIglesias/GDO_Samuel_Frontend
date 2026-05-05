@@ -144,6 +144,66 @@ describe('OracionesApiAdapter', () => {
     });
   });
 
+  describe('getSumatorioByUsuario', () => {
+    it('sends GET to /oraciones/sumatorio/usuario/:usuarioId', () => {
+      const mockSumatorio = {
+        laudes: 12,
+        visperas: 8,
+        completas: 4,
+        angelusReginaCoeli: 6,
+        misteriosRosario: 3,
+        horasSantisimo: 2,
+        horasOracion: 25,
+        novenas: 1,
+        horasTrabajo: 80,
+        horasEstudio: 30,
+        horasDeporte: 12,
+        horasOracionCantando: 5,
+        ayunos: 6,
+        coronillas: 4,
+        voluntariados: 2,
+        misas: 20,
+      };
+
+      adapter.getSumatorioByUsuario(10).subscribe(res => {
+        expect(res).toEqual(mockSumatorio);
+      });
+
+      const req = httpTesting.expectOne(`${fakeApiUrl}/oraciones/sumatorio/usuario/10`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockSumatorio);
+    });
+  });
+
+  describe('getRetirosByUsuario', () => {
+    it('sends GET to /oraciones/usuario/:usuarioId/retiros and returns the array', () => {
+      const mockRetiros = [
+        {
+          oracionId: 42,
+          retiroId: 7,
+          ubicacion: 'Madrid',
+          fechaInicio: '2025-03-12T00:00:00.000Z',
+          fechaFin: '2025-03-14T00:00:00.000Z',
+        },
+        {
+          oracionId: 28,
+          retiroId: 3,
+          ubicacion: 'Ávila',
+          fechaInicio: '2024-12-06T00:00:00.000Z',
+          fechaFin: '2024-12-08T00:00:00.000Z',
+        },
+      ];
+
+      adapter.getRetirosByUsuario(10).subscribe(res => {
+        expect(res).toEqual(mockRetiros);
+      });
+
+      const req = httpTesting.expectOne(`${fakeApiUrl}/oraciones/usuario/10/retiros`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockRetiros);
+    });
+  });
+
   describe('getRetiroInfo', () => {
     const mockRetiroInfo = { id: 5, fechaInicio: '2024-03-15', ubicacion: 'Madrid' };
 

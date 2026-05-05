@@ -9,6 +9,7 @@ import type { PaginatedResponse } from '../../../shared/models/paginated-respons
 import { TokenStoragePort } from '../../auth/domain/ports/token-storage.port';
 import type { CreateOracionDTO, Oracion, SumatorioOraciones } from '../domain/models/oracion.model';
 import type { RetiroInfo } from '../domain/models/retiro-info.model';
+import type { RetiroParticipacion } from '../domain/models/retiro-participacion.model';
 import { OracionesPort } from '../domain/ports/oraciones.port';
 
 @Injectable()
@@ -44,6 +45,18 @@ export class OracionesApiAdapter extends OracionesPort {
 
   getSumatorio(retiroId: number): Observable<SumatorioOraciones> {
     return this.http.get<SumatorioOraciones>(`${this.apiUrl}/oraciones/sumatorio/${retiroId}`);
+  }
+
+  getSumatorioByUsuario(usuarioId: number): Observable<SumatorioOraciones> {
+    return this.http.get<SumatorioOraciones>(
+      `${this.apiUrl}/oraciones/sumatorio/usuario/${usuarioId}`,
+    );
+  }
+
+  getRetirosByUsuario(usuarioId: number): Observable<RetiroParticipacion[]> {
+    return this.http.get<RetiroParticipacion[]>(
+      `${this.apiUrl}/oraciones/usuario/${usuarioId}/retiros`,
+    );
   }
 
   getRetiroInfo(retiroId: number): Observable<RetiroInfo> {
